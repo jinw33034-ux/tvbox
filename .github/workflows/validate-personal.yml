@@ -1,0 +1,21 @@
+name: Validate personal configuration
+on:
+  workflow_dispatch:
+  push:
+    paths: ['personal.json', 'scripts/validate_personal.py', 'scripts/test_validate_personal.py', '.github/workflows/validate-personal.yml']
+  pull_request:
+    paths: ['personal.json', 'scripts/validate_personal.py', 'scripts/test_validate_personal.py', '.github/workflows/validate-personal.yml']
+permissions:
+  contents: read
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Static validation
+        run: python3 scripts/validate_personal.py
+      - name: Validator regression tests
+        run: python3 -m unittest discover -s scripts -p 'test_*.py' -v
